@@ -6,38 +6,33 @@
     <div class="max-w-2xl mx-auto">
         <h1 class="text-3xl font-bold mt-8">Latest Chirps</h1>
 
-        <!-- Chirp Form -->
-        <div class="card bg-base-100 shadow mt-8">
-            <div class="card-body">
-                <form method="POST" action="/chirps">
-                    @csrf
-                    <div class="form-control w-full">
-                        <textarea
-                            name="message"
-                            placeholder="What's on your mind?"
-                            class="textarea textarea-bordered w-full resize-none @error('message') textarea-error @enderror"
-                            rows="4"
-                            maxlength="255"
-                            required
-                        >{{ old('message') }}</textarea>
-
-                        @error('message')
-                            <div class="label">
-                                <span class="label-text-alt text-error">{{ $message }}</span>
-                            </div>
-                        @enderror
-                    </div>
-
-                    <div class="mt-4 flex items-center justify-end">
-                        <button type="submit" class="btn btn-primary btn-sm">
-                            Chirp
-                        </button>
-                    </div>
-                </form>
+        @if(session('status'))
+            <div class="rounded-lg border border-green-200 bg-green-50 p-4 mt-6 text-sm text-green-700">
+                {{ session('status') }}
             </div>
-        </div>
+        @endif
 
-        <!-- Feed -->
+        <form action="{{ route('chirps.store') }}" method="POST" class="mt-8">
+            @csrf
+            <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <label for="message" class="block text-sm font-medium text-gray-700">Share a new chirp</label>
+                <textarea
+                    id="message"
+                    name="message"
+                    rows="3"
+                    class="mt-2 block w-full rounded-xl border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="What's happening?">{{ old('message') }}</textarea>
+                @error('message')
+                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+                <div class="mt-4 text-right">
+                    <button type="submit" class="inline-flex items-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">
+                        Chirp
+                    </button>
+                </div>
+            </div>
+        </form>
+
         <div class="space-y-4 mt-8">
             @forelse ($chirps as $chirp)
                 <x-chirp :chirp="$chirp" />

@@ -1,36 +1,23 @@
 <?php
-
-use App\Http\Controllers\Auth\Login;
-use App\Http\Controllers\Auth\Logout;
-use App\Http\Controllers\Auth\Register;
-use App\Http\Controllers\ChirpController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChirpController;
 
-Route::get('/', [ChirpController::class, 'index']);
+Route::get('/', [ChirpController::class, 'index'])->name('home');
+Route::post('/chirps', [ChirpController::class, 'store'])->name('chirps.store');
+Route::get('/chirps/{chirp}/edit', [ChirpController::class, 'edit'])->name('chirps.edit');
+Route::patch('/chirps/{chirp}', [ChirpController::class, 'update'])->name('chirps.update');
+Route::delete('/chirps/{chirp}', [ChirpController::class, 'destroy'])->name('chirps.destroy');
 
-// Protected routes
-Route::middleware('auth')->group(function () {
-    Route::post('/chirps', [ChirpController::class, 'store']);
-    Route::get('/chirps/{chirp}/edit', [ChirpController::class, 'edit']);
-    Route::put('/chirps/{chirp}', [ChirpController::class, 'update']);
-    Route::delete('/chirps/{chirp}', [ChirpController::class, 'destroy']);
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
 });
 
-// Registration routes
-Route::view('/register', 'auth.register')
-    ->middleware('guest')
-    ->name('register');
-Route::post('/register', Register::class)
-    ->middleware('guest');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
-// Login routes
-Route::view('/login', 'auth.login')
-    ->middleware('guest')
-    ->name('login');
-Route::post('/login', Login::class)
-    ->middleware('guest');
-
-// Logout route
-Route::post('/logout', Logout::class)
-    ->middleware('auth')
-    ->name('logout');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware('auth')->name('dashboard');
